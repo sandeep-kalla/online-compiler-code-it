@@ -198,13 +198,13 @@ export function CodeEditor({
     scrollBeyondLastLine: false,
     roundedSelection: false,
     padding: { top: 10 },
-    lineNumbers: "on",
+    lineNumbers: "on" as const,
     glyphMargin: false,
     folding: true,
     lineDecorationsWidth: 0,
     lineNumbersMinChars: 3,
-    cursorBlinking: "smooth",
-    cursorSmoothCaretAnimation: "on",
+    cursorBlinking: "smooth" as const,
+    cursorSmoothCaretAnimation: "on" as const,
     smoothScrolling: true,
     quickSuggestions: {
       other: true,
@@ -333,12 +333,21 @@ export function CodeEditor({
     // Register completions for each language
     Object.entries(compilerSuggestions).forEach(([lang, suggestions]) => {
       monaco.languages.registerCompletionItemProvider(lang, {
-        provideCompletionItems: () => {
+        provideCompletionItems: (model, position) => {
+          const word = model.getWordUntilPosition(position);
+          const range = {
+            startLineNumber: position.lineNumber,
+            endLineNumber: position.lineNumber,
+            startColumn: word.startColumn,
+            endColumn: word.endColumn
+          };
+
           return {
             suggestions: suggestions.map(s => ({
               ...s,
               kind: s.kind,
-              insertTextRules: s.insertTextRules
+              insertTextRules: s.insertTextRules,
+              range
             }))
           };
         }
@@ -365,10 +374,10 @@ export function CodeEditor({
         onChange={onChange}
         beforeMount={defineThemes}
         onMount={handleEditorDidMount}
-        options={{
-          ...defaultOptions,
-          ...editorOptions,
-        }}
+        // options={{
+        //   ...defaultOptions,
+        //   ...editorOptions,
+        // }}
       />
     </div>
   );
