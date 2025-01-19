@@ -195,6 +195,7 @@ export function CodeEditor({
     minimap: { enabled: false },
     fontSize: 14,
     fontFamily: "'Fira Code', monospace",
+    fontLigatures: true,
     scrollBeyondLastLine: false,
     roundedSelection: false,
     padding: { top: 10 },
@@ -213,16 +214,16 @@ export function CodeEditor({
     },
     suggestOnTriggerCharacters: true,
     acceptSuggestionOnCommitCharacter: true,
-    wordBasedSuggestions: true,
+    wordBasedSuggestions: "currentDocument" as const,
     parameterHints: {
       enabled: true
     },
-    suggestSelection: "first",
+    suggestSelection: "first" as const,
     formatOnPaste: true,
     formatOnType: true,
-    autoClosingBrackets: "always",
-    autoClosingQuotes: "always",
-    autoSurround: "languageDefined",
+    autoClosingBrackets: "always" as const,
+    autoClosingQuotes: "always" as const,
+    autoSurround: "languageDefined" as const,
     bracketPairColorization: {
       enabled: true
     },
@@ -374,10 +375,14 @@ export function CodeEditor({
         onChange={onChange}
         beforeMount={defineThemes}
         onMount={handleEditorDidMount}
-        // options={{
-        //   ...defaultOptions,
-        //   ...editorOptions,
-        // }}
+        options={{
+          ...defaultOptions,
+          ...editorOptions,
+          fontSize: editorOptions.fontSize,
+          fontFamily: editorOptions.fontFamily,
+          cursorBlinking: "smooth" as const,
+          cursorSmoothCaretAnimation: "on" as const,
+        }}
       />
     </div>
   );
